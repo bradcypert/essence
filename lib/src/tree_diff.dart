@@ -7,14 +7,43 @@ class NodeAction {
   Node node;
 }
 
-class NodeInsertion extends NodeAction {}
-class NodeDeletion extends NodeAction {}
+class NodeInsertion implements NodeAction {
+  String XPATH;
+  Node node;
+
+  NodeInsertion({this.node, this.XPATH});
+}
+
+class NodeDeletion implements NodeAction {
+  String XPATH;
+  Node node;
+
+  NodeDeletion({this.node, this.XPATH});
+}
 
 class TreeDiff {
   /// Diff two node lists, returning a list of NodeActions
-  static List<NodeAction> diff(nodeList1, nodeList2) {
-    if (nodeList1.isEmpty && nodeList2.isEmpty) {
-      return [];
+  static List<NodeAction> diff(List<Node> baseNodeList, List<Node> targetNodeList, [List<NodeAction> nodeActions, currentXPATH = ""]) {
+    List<NodeAction> actions = nodeActions != null ? List.from(nodeActions) : [];
+    if (baseNodeList.isEmpty && targetNodeList.isEmpty) {
+      return actions;
     }
+
+    // Items that are only in the base will generate deletion actions
+    var onlyInBase = List.from(baseNodeList)..removeWhere((node) => targetNodeList.contains(node));
+    // Items that are only in the target will generate insertion actions
+    var onlyInTarget = List.from(targetNodeList)..removeWhere((node) => baseNodeList.contains(node));
+    // Items thare are in both need further inspection but should ultimately generate deletion and insertion actions
+    var onlyInBoth = List.from(targetNodeList)..removeWhere((node) => !baseNodeList.contains(node));
+
+    onlyInTarget.forEach((node) {
+      actions.add(NodeInsertion(node: node, XPATH: currentXPATH));
+    });
+
+    onlyInBase.forEach((node) {
+      actions.add(NodeDeletion(node: node, XPATH: currentXPATH));
+    });
+
+    return actions;
   }
 }
