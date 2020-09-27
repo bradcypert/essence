@@ -20,5 +20,16 @@ void main() {
       expect(tree[0].type, equals("a"));
       expect(tree[0].children[0].type, equals("b"));
     });
+
+    test("handles non-standard elements", () {
+      var tree = TreeParser.parse("<FOO/>");
+      expect(tree[0].type, equals("foo"));
+    });
+
+    test("should pull attributes from the node", () {
+      var tree = TreeParser.parse('<ele isTest=true />');
+      expect(tree[0].type, equals('ele'));
+      expect(tree[0].properties, equals({'istest': 'true'}));
+    });
   });
 }

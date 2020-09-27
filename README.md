@@ -8,7 +8,7 @@ Created from templates made available by Stagehand under a BSD-style
 A simple usage example:
 
 ```dart
-import 'package:./..dart';
+import 'package:essence/essence.dart';
 
 main() {
   var awesome = new Awesome();
