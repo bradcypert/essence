@@ -21,5 +21,15 @@ void main() {
       expect(actions[0].node, equals(node));
       expect(actions[0] is NodeDeletion, equals(true));
     });
+
+    test("A list of two single different nodes between base and target should return a delete for the base node and an update for the target node", () {
+      var node1 = Node(type: "a");
+      var node2 = Node(type: "b");
+      var actions = TreeDiff.diff([node1], [node2]);
+      expect(actions[0].node, equals(node1));
+      expect(actions[0] is NodeDeletion, equals(true));
+      expect(actions[1].node, equals(node2));
+      expect(actions[1] is NodeInsertion, equals(true));
+    });
   });
 }

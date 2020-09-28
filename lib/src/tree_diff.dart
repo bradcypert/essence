@@ -36,12 +36,13 @@ class TreeDiff {
     // Items thare are in both need further inspection but should ultimately generate deletion and insertion actions
     var onlyInBoth = List.from(targetNodeList)..removeWhere((node) => !baseNodeList.contains(node));
 
-    onlyInTarget.forEach((node) {
-      actions.add(NodeInsertion(node: node, XPATH: currentXPATH));
-    });
-
     onlyInBase.forEach((node) {
       actions.add(NodeDeletion(node: node, XPATH: currentXPATH));
+    });
+
+    
+    onlyInTarget.forEach((node) {
+      actions.add(NodeInsertion(node: node, XPATH: currentXPATH));
     });
 
     return actions;
