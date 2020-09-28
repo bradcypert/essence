@@ -40,7 +40,7 @@ class TreeDiff {
       actions.add(NodeDeletion(node: node, XPATH: currentXPATH));
     });
 
-    
+
     onlyInTarget.forEach((node) {
       actions.add(NodeInsertion(node: node, XPATH: currentXPATH));
     });

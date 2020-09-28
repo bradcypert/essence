@@ -31,5 +31,12 @@ void main() {
       expect(actions[1].node, equals(node2));
       expect(actions[1] is NodeInsertion, equals(true));
     });
+
+    test("Same nodes should not generate actions", () {
+      var node1 = Node(type: "a");
+      var node2 = Node(type: "a");
+      var actions = TreeDiff.diff([node1], [node2]);
+      expect(actions.length, equals(0));
+    });
   });
 }
