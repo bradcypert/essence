@@ -7,8 +7,10 @@ class Node {
 
   Node({this.type, this.properties, this.children});
 
+  @override
   bool operator ==(node) {
     return node is Node &&
-      node.type == this.type; // TODO: Add properties and children to this comparison
+        node.type ==
+            type; // TODO: Add properties and children to this comparison
   }
 }

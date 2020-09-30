@@ -1,5 +1,4 @@
-import "package:essence/src/node.dart";
-
+import 'package:essence/src/node.dart';
 
 /// Define actions to be processed against a tree.
 class NodeAction {
@@ -8,14 +7,18 @@ class NodeAction {
 }
 
 class NodeInsertion implements NodeAction {
+  @override
   String XPATH;
+  @override
   Node node;
 
   NodeInsertion({this.node, this.XPATH});
 }
 
 class NodeDeletion implements NodeAction {
+  @override
   String XPATH;
+  @override
   Node node;
 
   NodeDeletion({this.node, this.XPATH});
@@ -23,27 +26,44 @@ class NodeDeletion implements NodeAction {
 
 class TreeDiff {
   /// Diff two node lists, returning a list of NodeActions
-  static List<NodeAction> diff(List<Node> baseNodeList, List<Node> targetNodeList, [List<NodeAction> nodeActions, currentXPATH = ""]) {
-    List<NodeAction> actions = nodeActions != null ? List.from(nodeActions) : [];
+  static List<NodeAction> diff(
+      List<Node> baseNodeList, List<Node> targetNodeList,
+      [currentXPATH = '']) {
+    // ignore: omit_local_variable_types
+    List<NodeAction> actions = [];
     if (baseNodeList.isEmpty && targetNodeList.isEmpty) {
       return actions;
     }
 
-    // Items that are only in the base will generate deletion actions
-    var onlyInBase = List.from(baseNodeList)..removeWhere((node) => targetNodeList.contains(node));
-    // Items that are only in the target will generate insertion actions
-    var onlyInTarget = List.from(targetNodeList)..removeWhere((node) => baseNodeList.contains(node));
-    // Items thare are in both need further inspection but should ultimately generate deletion and insertion actions
-    var onlyInBoth = List.from(targetNodeList)..removeWhere((node) => !baseNodeList.contains(node));
+    var baseEntries = List.from(baseNodeList).asMap();
+    var targetEntries = List.from(targetNodeList).asMap();
+    var baseEntriesList = baseEntries.entries.toList();
+    var targetEntriesList = targetEntries.entries.toList();
 
-    onlyInBase.forEach((node) {
-      actions.add(NodeDeletion(node: node, XPATH: currentXPATH));
-    });
+    if (targetEntries.isEmpty) {
+      actions
+          .addAll(baseEntries.entries.map((e) => NodeDeletion(node: e.value)));
+    }
 
+    var matchingIndexes = targetEntriesList
+        .where((entry) => entry.value == baseEntries[entry.key]);
+    var nonMatchingIndexesForTarget = targetEntriesList
+        .where((entry) => entry.value != baseEntries[entry.key]);
+    var nonMatchingIndexesForBase = baseEntriesList
+        .where((entry) => entry.value != targetEntries[entry.key]);
 
-    onlyInTarget.forEach((node) {
-      actions.add(NodeInsertion(node: node, XPATH: currentXPATH));
-    });
+    actions.addAll(
+        nonMatchingIndexesForBase.map((e) => NodeDeletion(node: e.value)));
+    actions.addAll(nonMatchingIndexesForTarget
+        .map((entry) => NodeInsertion(node: entry.value)));
+
+    // process child nodes of matching
+    if (matchingIndexes.isNotEmpty) {
+      actions.addAll(matchingIndexes
+          .map((e) => TreeDiff.diff(
+              baseEntries[e.key].children ?? [], e.value.children ?? []))
+          .expand((e) => e));
+    }
 
     return actions;
   }
