@@ -12,6 +12,7 @@ void main() {
       var node = Node(type: 'a');
       var actions = TreeDiff.diff([], [node]);
       expect(actions[0].node, equals(node));
+      expect(actions[0].XPATH, equals('/a[1]'));
       expect(actions[0] is NodeInsertion, equals(true));
     });
 
@@ -21,6 +22,7 @@ void main() {
       var node = Node(type: 'a');
       var actions = TreeDiff.diff([node], []);
       expect(actions[0].node, equals(node));
+      expect(actions[0].XPATH, equals('/a[1]'));
       expect(actions[0] is NodeDeletion, equals(true));
     });
 
@@ -31,6 +33,7 @@ void main() {
       var node2 = Node(type: 'b');
       var actions = TreeDiff.diff([node2, node], [node]);
       expect(actions[0].node, equals(node2));
+      expect(actions[0].XPATH, equals('/b[1]'));
       expect(actions[0] is NodeDeletion, equals(true));
     });
 
@@ -40,6 +43,7 @@ void main() {
       var actions = TreeDiff.diff([node, node2], [node]);
       expect(actions.length, equals(1));
       expect(actions[0].node, equals(node2));
+      expect(actions[0].XPATH, equals('/b[2]'));
       expect(actions[0] is NodeDeletion, equals(true));
     });
 
@@ -50,8 +54,10 @@ void main() {
       var node2 = Node(type: 'b');
       var actions = TreeDiff.diff([node1], [node2]);
       expect(actions[0].node, equals(node1));
+      expect(actions[0].XPATH, equals('/a[1]'));
       expect(actions[0] is NodeDeletion, equals(true));
       expect(actions[1].node, equals(node2));
+      expect(actions[1].XPATH, equals('/b[1]'));
       expect(actions[1] is NodeInsertion, equals(true));
     });
 
@@ -74,6 +80,18 @@ void main() {
       var node2 = Node(type: 'a', children: [Node(type: 'b')]);
       var actions = TreeDiff.diff([node2, node1], [node1, node2]);
       expect(actions.length, equals(4));
+      expect(actions[0].node, equals(node2.children[0]));
+      expect(actions[0].XPATH, equals('/a[1]/b[1]'));
+      expect(actions[0] is NodeDeletion, equals(true));
+      expect(actions[1].node, equals(node1.children[0]));
+      expect(actions[1].XPATH, equals('/a[1]/a[1]'));
+      expect(actions[1] is NodeInsertion, equals(true));
+      expect(actions[2].node, equals(node2.children[0]));
+      expect(actions[2].XPATH, equals('/a[1]/b[1]'));
+      expect(actions[2] is NodeDeletion, equals(true));
+      expect(actions[3].node, equals(node1.children[0]));
+      expect(actions[3].XPATH, equals('/a[1]/a[1]'));
+      expect(actions[3] is NodeInsertion, equals(true));
     });
 
     test('different deep nodes should generate actions', () {
