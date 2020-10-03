@@ -8,6 +8,7 @@ Essence is a super-simple Virtual DOM implementation in Dart.
 Essence can parse DOM-Strings into Essence Nodes.
 
 Essence can diff Essence Nodes and provide a list of actions on how to go from NodeList A to NodeList B.
+
 ## Usage
 
 A simple usage example:
@@ -20,7 +21,40 @@ main() {
   var tree2 = TreeParser.parse("<b></b>");
   TreeDiff.diff(tree1, tree2).forEach((action) => {
     print(action.node);
-    print(action.XPATH);
+    print(action.selector);
+  });
+}
+```
+
+More interesting perhaps, you can leverage those actions to make updates to an actual DOM. It's worth mentioning that these CSS selectors are unbounded by default. You can pass in a `currentSelector` to `TreeDiff`'s `diff` function to scope them.
+
+```html
+<h1 class="root">
+  <span>Text!</span>
+</h1>
+```
+
+```dart
+import 'dart:html';
+import 'package:essence/essence.dart';
+
+main() {
+  var element = Element.div();
+  element.className = 'root';
+  element.childNodes.add(Element.span());
+
+  var element2 = Element.div();
+  element.className = 'root';
+  element2.childNodes.add(Element.article());
+
+  var eleParsed = TreeParser.parseElement(element);
+  var ele2Parsed = TreeParser.parseElement(element2);
+  var actions =
+      TreeDiff.diff(eleParsed, ele2Parsed, currentSelector: '.root');
+  actions.forEach((action) {
+    // ideally, do the action instead of just printing it, but Ill leave the code for that up to you :)
+    print(
+        '${action is NodeDeletion ? "Delete" : "Insert"} ${action.node.type} at selector ${action.selector}');
   });
 }
 ```
