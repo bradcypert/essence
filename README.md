@@ -28,17 +28,13 @@ main() {
 
 More interesting perhaps, you can leverage those actions to make updates to an actual DOM. It's worth mentioning that these CSS selectors are unbounded by default. You can pass in a `currentSelector` to `TreeDiff`'s `diff` function to scope them.
 
-```html
-<h1 class="root">
-  <span>Text!</span>
-</h1>
-```
-
 ```dart
 import 'dart:html';
 import 'package:essence/essence.dart';
 
 main() {
+  // ideally, you'll generate these from dart:html's querySelector
+  // but you can create them programatically, too!
   var element = Element.div();
   element.className = 'root';
   element.childNodes.add(Element.span());
