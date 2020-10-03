@@ -28,7 +28,7 @@ class TreeDiff {
   /// Diff two node lists, returning a list of NodeActions
   static List<NodeAction> diff(
       List<Node> baseNodeList, List<Node> targetNodeList,
-      [currentXPATH = '']) {
+      {currentXPATH = ''}) {
     // ignore: omit_local_variable_types
     List<NodeAction> actions = [];
     if (baseNodeList.isEmpty && targetNodeList.isEmpty) {
@@ -42,8 +42,7 @@ class TreeDiff {
 
     if (targetEntries.isEmpty) {
       actions.addAll(baseEntries.entries.map((e) => NodeDeletion(
-          node: e.value,
-          XPATH: '${currentXPATH}/${e.value.type}[${e.key + 1}]')));
+          node: e.value, XPATH: '${currentXPATH}/*[${e.key + 1}]')));
     }
 
     var matchingIndexes = targetEntriesList
@@ -53,20 +52,17 @@ class TreeDiff {
     var nonMatchingIndexesForBase = baseEntriesList
         .where((entry) => entry.value != targetEntries[entry.key]);
 
-    actions.addAll(nonMatchingIndexesForBase.map((e) => NodeDeletion(
-        node: e.value,
-        XPATH: '${currentXPATH}/${e.value.type}[${e.key + 1}]')));
+    actions.addAll(nonMatchingIndexesForBase.map((e) =>
+        NodeDeletion(node: e.value, XPATH: '${currentXPATH}/*[${e.key + 1}]')));
     actions.addAll(nonMatchingIndexesForTarget.map((e) => NodeInsertion(
-        node: e.value,
-        XPATH: '${currentXPATH}/${e.value.type}[${e.key + 1}]')));
+        node: e.value, XPATH: '${currentXPATH}/*[${e.key + 1}]')));
 
     // process child nodes of matching
     if (matchingIndexes.isNotEmpty) {
       actions.addAll(matchingIndexes
           .map((e) => TreeDiff.diff(
-              baseEntries[e.key].children ?? [],
-              e.value.children ?? [],
-              currentXPATH = '${currentXPATH}/${e.value.type}[${e.key + 1}]'))
+              baseEntries[e.key].children ?? [], e.value.children ?? [],
+              currentXPATH: '${currentXPATH}/*[${e.key + 1}]'))
           .expand((e) => e));
     }
 
