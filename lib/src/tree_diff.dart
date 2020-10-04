@@ -1,11 +1,17 @@
 import 'package:essence/src/node.dart';
 
 /// Define actions to be processed against a tree.
+///
+/// The intended use case here is more robust actions to extend
+/// this class and give us an abstract base to work with.
+/// Essence won't ultimately care if it generates Insertions or Deletion actions
+/// but the user probably will.
 class NodeAction {
   String selector;
   Node node;
 }
 
+/// NodeAction that describes which DOM element should be inserted and how it should be inserted.
 class NodeInsertion implements NodeAction {
   @override
   String selector;
@@ -15,6 +21,7 @@ class NodeInsertion implements NodeAction {
   NodeInsertion({this.node, this.selector});
 }
 
+/// NodeAction that describes which DOM element should be deleted and how it should be deleted.
 class NodeDeletion implements NodeAction {
   @override
   String selector;
@@ -24,8 +31,12 @@ class NodeDeletion implements NodeAction {
   NodeDeletion({this.node, this.selector});
 }
 
+// TODO: Does this really need to be class? Would this be better as a top level function?
+
+/// Contains logic for diffing two trees
 class TreeDiff {
-  /// Diff two node lists, returning a list of NodeActions
+  /// Diff two node lists, returning a list of NodeActions that indicate
+  /// how to move from the first tree to the second.
   static List<NodeAction> diff(
       List<Node> baseNodeList, List<Node> targetNodeList,
       {currentSelector = ''}) {
