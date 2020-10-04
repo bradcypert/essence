@@ -1,8 +1,7 @@
 name: essence
-description: A starting point for Dart libraries or applications.
+description: A super simple virtual DOM implementation in Dart. Supports Diffing, too!
 version: 0.0.1
 repository: https://www.github.com/bradcypert/essence
-# homepage: https://www.example.com
 
 environment:
   sdk: ">=2.8.1 <3.0.0"
