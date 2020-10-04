@@ -7,10 +7,7 @@ name: Pub Deploy
 on:
   push:
     tags:
-      - v*
-      - v*.*
-      - v*.*.*
-      - v*.*.*+*
+      - v**
 
 jobs:
   deploy:
