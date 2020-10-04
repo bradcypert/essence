@@ -9,6 +9,8 @@ Essence can parse DOM-Strings into Essence Nodes.
 
 Essence can diff Essence Nodes and provide a list of actions on how to go from NodeList A to NodeList B.
 
+![Pub Version](https://img.shields.io/pub/v/essence?include_prereleases&style=for-the-badge)
+
 ## Usage
 
 A simple usage example:
